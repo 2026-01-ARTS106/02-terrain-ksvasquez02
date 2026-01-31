@@ -13,6 +13,15 @@ public class Mover : MonoBehaviour
     [SerializeField]
     private float speed = 50;
 
+    [SerializeField]
+    private Looker looker;
+
+
+    private void Awake()
+    {
+        looker = looker != null ? looker : gameObject.GetComponentInChildren<Looker>();
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -32,9 +41,18 @@ public class Mover : MonoBehaviour
 
         dir = (new Vector3(d_hori.x, d_up - d_down, d_hori.y)).normalized;
 
+        Quaternion faceRotate = Quaternion.AngleAxis(looker.LookDirection.y + 180, Vector3.up);
+        dir = faceRotate * dir;
+
         vel = speed * Time.deltaTime * dir;
         pos += vel;
 
         transform.position = pos;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(transform.position, transform.position + vel.normalized);
     }
 }
